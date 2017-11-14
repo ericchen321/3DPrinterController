@@ -79,7 +79,7 @@ Router = LinkR2 * 0.001;    % outer radius of the ring
 Rinner = LinkR1 * 0.001;    % inner radius of the ring
 D = LinkD * 0.001;          % depth of the ring
 Mq = Q1(31);                % mass of q1
-Rq = Q1(32);                % outer radius of q1
+Rq = Q1(32)/2;                % outer radius of q1
 Hq = Q1(33);                % height of q1
 pAl = RhoAl;                % density of Al
 
@@ -109,7 +109,7 @@ StallI1 = 1;                 % Max peak current
 
 % Electrical Motor Dynamics
 Elec0n  = [1];               % Numerator
-Elec0d  = [Q0(10)];          % Denominator
+Elec0d  = [Q0(11) Q0(10)];          % Denominator
 % This transfer function relates rotor current to (input voltage - emf),
 % and in DC is the conductance of the terminal resistor
 
@@ -119,24 +119,27 @@ BackEMF0 = 1/(Q0(13));
 
 % Mechanical Motor Dynamics
 % Determining J:
-Maux = (Router/Rinner)*Mq*2;
+Maux = (Router/Hq)*Mq*2;
 SigH = Router + Hq;
-SigM = ((Router/Hq)*2+2)*Mq;
-Jbar = SigM/12 * (3*Rq^2 + (2*SigH)^2);
-Jaux = Maux/12 * (3*Rq^2 + (2*Router)^2);
+SigM = ((Router/Hq)*2 + 2)*Mq;
+Jbar = SigM * (1/12) * (3*Rq^2 + (2*SigH)^2);
+Jaux = Maux * (1/12) * (3*Rq^2 + (2*Router)^2);
 JQ1AndCB = Jbar - Jaux;
 Jring = pi*pAl*D*(1/12)*(3*(Router^4 - Rinner^4)+ D^2*(Router^2 - Rinner^2));
-Jq0 = (1/2) * Mq * Rq^2;
+Jq0 = Q0(16);
 SigJ = JQ1AndCB + Jring + Jq0;
 
 % Determining B:
-B = 1/(-1 * Q0(14));        % B = (1/(- SpdTorqueGrad))
+B = Q0(14)^(-1);        % Compute B from SpdTorqueGrad
 
 % Determining K:
-K = SpringConst;
+K = 0;
 
 % Mech Transfer Function:
-Mech0n  = [1];               % Numerator
+BLTerm = B * Q0(11);
+JRTerm = SigJ *Rq;
+
+Mech0n  = [1 0];               % Numerator
 Mech0d  = [SigJ B K];        % Denominator
 JntSat0 =  Big;
 
