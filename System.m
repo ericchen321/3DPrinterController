@@ -72,8 +72,16 @@ ConversionArray = ...
  0.001];                % Length        (mm)
 
 % Convert units to standard units
-Q0 = ConversionArray .* Q0; 
+Q0 = ConversionArray .* Q0;
 Q1 = ConversionArray .* Q1;
+SpringConst = SpringK * 0.001 * 1/(2*pi);
+Router = LinkR2 * 0.001;    % outer radius of the ring
+Rinner = LinkR1 * 0.001;    % inner radius of the ring
+D = LinkD * 0.001;          % depth of the ring
+Mq = Q1(31);                % mass of q1
+Rq = Q1(32);                % outer radius of q1
+Hq = Q1(33);                % height of q1
+pAl = RhoAl;                % density of Al
 
 % Convert temperatures to Kelvin
 Q0(21) = Q0(21)+273; 
@@ -100,13 +108,37 @@ StallI1 = 1;                 % Max peak current
 % ------------------
 
 % Electrical Motor Dynamics
-% -------------------------
+Elec0n  = [1];               % Numerator
+Elec0d  = [Q0(10)];          % Denominator
+% This transfer function relates rotor current to (input voltage - emf),
+% and in DC is the conductance of the terminal resistor
 
 % Torque Const & Back EMF
 TConst0  = Q0(12);
+BackEMF0 = 1/(Q0(13));
 
 % Mechanical Motor Dynamics
-% -------------------------
+% Determining J:
+Maux = (Router/Rinner)*Mq*2;
+SigH = Router + Hq;
+SigM = ((Router/Hq)*2+2)*Mq;
+Jbar = SigM/12 * (3*Rq^2 + (2*SigH)^2);
+Jaux = Maux/12 * (3*Rq^2 + (2*Router)^2);
+JQ1AndCB = Jbar - Jaux;
+Jring = pi*pAl*D*(1/12)*(3*(Router^4 - Rinner^4)+ D^2*(Router^2 - Rinner^2));
+Jq0 = (1/2) * Mq * Rq^2;
+SigJ = JQ1AndCB + Jring + Jq0;
+
+% Determining B:
+B = 1/(-1 * Q0(14));        % B = (1/(- SpdTorqueGrad))
+
+% Determining K:
+K = SpringConst;
+
+% Mech Transfer Function:
+Mech0n  = [1];               % Numerator
+Mech0d  = [SigJ B K];        % Denominator
+JntSat0 =  Big;
 
 % Sensor Dynamics
 % ---------------
@@ -123,10 +155,12 @@ TConst0  = Q0(12);
 % ------------------
 
 % Electrical Motor Dynamics
-% -------------------------
+Elec1n  = [1];               % Numerator
+Elec1d  = [Q1(10)];          % Denominator
 
 % Torque Const & Back EMF
 TConst1  = Q1(12);
+BackEMF1 = 1/(Q1(13));
 
 % Mechanical Motor Dynamics
 % -------------------------
