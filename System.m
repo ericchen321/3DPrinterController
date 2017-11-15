@@ -119,18 +119,18 @@ BackEMF0 = 1/(Q0(13));
 
 % Mechanical Motor Dynamics
 % Determining J:
-Maux = (Router/Hq)*Mq*2;
-SigH = Router + Hq;
-SigM = ((Router/Hq)*2 + 2)*Mq;
+Maux = (Rinner/Hq)*Mq*2;
+SigH = Rinner + Hq;
+SigM = ((Rinner/Hq)*2 + 2)*Mq;
 Jbar = SigM * (1/12) * (3*Rq^2 + (2*SigH)^2);
-Jaux = Maux * (1/12) * (3*Rq^2 + (2*Router)^2);
+Jaux = Maux * (1/12) * (3*Rq^2 + (2*Rinner)^2);
 JQ1AndCB = Jbar - Jaux;
 Jring = pi*pAl*D*(1/12)*(3*(Router^4 - Rinner^4)+ D^2*(Router^2 - Rinner^2));
 Jq0 = Q0(16);
 SigJ = JQ1AndCB + Jring + Jq0;
 
 % Determining B:
-B = Q0(14)^(-1);        % Compute B from SpdTorqueGrad
+B = 1/Q0(14);        % Compute B from the no load parameters
 
 % Determining K:
 K = 0;
