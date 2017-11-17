@@ -32,7 +32,7 @@ ConversionArray = ...
  0.001                  % NoLoadCurr    (mA)
  RadPSecPerRPM          % NomSpd        (rpm)
  0.001                  % NomTorque     (mNm)
- 1                      % NomCurr       (A)
+ 0.001                  % NomCurr       (mA)
  0.001                  % StallTorque   (mNm)
  1                      % StallCurr     (A)
  0.01                   % MaxEff        (%)
@@ -105,8 +105,13 @@ StallI1 = Q1(8);                 % Max peak current
 % =============================
 
 % Amplifier Dynamics
-% ------------------
-
+% The transfer function: (R1*R2-L/C)/(R1*R2+s*R1*L)
+Ampn0 = ((R1*10^6)*R2)-(L*10^(-3)/(C*10^-6));
+Ampd0 = ((R1*10^6)*R2);
+Ampd1 = ((R1*10^-6)*(L*10^-3));
+Amp0d = [Ampd1 Ampd0];
+Amp0n = [Ampn0];
+AmpSat0 =  Q0(1);
 % Electrical Motor Dynamics
 Elec0n  = [1];               % Numerator
 Elec0d  = [Q0(11) Q0(10)];          % Denominator
@@ -140,6 +145,7 @@ K = SpringConst;
 % Mech Transfer Function:
 K = 0;
 SigJ =8*10^(-5);
+
 Mech0n  = [1 0];               % Numerator
 Mech0d  = [SigJ B K];        % Denominator
 JntSat0 =  Big;
