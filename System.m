@@ -111,7 +111,7 @@ Ampd0 = ((R1*10^6)*R2);
 Ampd1 = ((R1*10^-6)*(L*10^-3));
 Amp0d = [Ampd1 Ampd0];
 Amp0n = [Ampn0];
-
+AmpSat0 =  Q0(1);
 % Electrical Motor Dynamics
 Elec0n  = [1];               % Numerator
 Elec0d  = [Q0(11) Q0(10)];          % Denominator
