@@ -79,9 +79,14 @@ Router = LinkR2 * 0.001;    % outer radius of the ring
 Rinner = LinkR1 * 0.001;    % inner radius of the ring
 D = LinkD * 0.001;          % depth of the ring
 Mq = Q1(31);                % mass of q1
-Rq = Q1(32)/2;                % outer radius of q1
+Rq = Q1(32)/2;              % outer radius of q1
 Hq = Q1(33);                % height of q1
 pAl = RhoAl;                % density of Al
+uStatFric = uSF * 10^(-6);  % static friction constant
+R1  = R1*10^6;              % R1 from Mohm to Ohm
+R2  = R2;                   % R2
+C   = C*10^(-6);            % C from uF to F
+L   = L*0.001;              % L from mH to H
 
 % Convert temperatures to Kelvin
 Q0(21) = Q0(21)+273; 
@@ -95,6 +100,7 @@ Q1(22) = Q1(22)+273;
 % ==========================
 
 % Maximum Current
+% These values are all taken from the Datasheet
 NomI0   = Q0(6);                 % Max average current
 StallI0 = Q0(8);                 % Max peak current
 NomI1   = Q1(6);                 % Max average current
@@ -105,56 +111,65 @@ StallI1 = Q1(8);                 % Max peak current
 % =============================
 
 % Amplifier Dynamics
-% The transfer function: (R1*R2-L/C)/(R1*R2+s*R1*L)
-Ampn0 = ((R1*10^6)*R2)-(L*10^(-3)/(C*10^-6));
-Ampd0 = ((R1*10^6)*R2);
-Ampd1 = ((R1*10^-6)*(L*10^-3));
-Amp0d = [Ampd1 Ampd0];
-Amp0n = [Ampn0];
-AmpSat0 =  Q0(1);
+% We've used nodal analysis to analyze the Op-amp circuit
+s = tf('s');
+AmpXF = -1*(1/(R1*C*s)) + 1/(R1*C*s)*((1/(L*s))/(1/(L*s)+1/R2)) + ((1/(L*s))/(1/(L*s)+1/R2));   % The transfer function of the Op-amp, derived by hand
+[Amp0n, Amp0d] = tfdata(AmpXF, 'v');    % Convert the transfer function to the standard form
+AmpSat0 = Q0(1);    % Set the saturation voltage to be the maximum allowed input voltage to Q0
+
 % Electrical Motor Dynamics
-Elec0n  = [1];               % Numerator
-Elec0d  = [Q0(11) Q0(10)];          % Denominator
-% This transfer function relates rotor current to (input voltage - emf),
-% and in DC is the conductance of the terminal resistor
+Elec0n  = [1];                      % Numerator
+Elec0d  = [Q0(11) Q0(10)];          % Denominator, (sL + R), so the numerators are terminal inductance and terminal resistance of Q0's rotor, respectively
 
 % Torque Const & Back EMF
-TConst0  = Q0(12);
-BackEMF0 = 1/(Q0(13));
+TConst0  = Q0(12);                  % The torque constant given by the Datasheet
+BackEMF0 = 1/(Q0(13));              % The inverse of the speed costant in 
+                                    % the Datasheet - we take the inverse 
+                                    % because the speed constant is the rate 
+                                    % of change ofspeed versus backward emf, 
+                                    % while we need the rate of change of
+                                    % back emf versus speed
+                                    
 
 % Mechanical Motor Dynamics
-% Determining J:
+% Determining J (Moment of Inertia):
+% The procedure we've used to derive the total moment of inertia on Q0 has
+% been illustrated in our PDF Description.
 Maux = (Rinner/Hq)*Mq*2;
 SigH = Rinner + Hq;
 SigM = ((Rinner/Hq)*2 + 2)*Mq;
-Jbar = SigM * (1/12) * (3*Rq^2 + (2*SigH)^2);
-Jaux = Maux * (1/12) * (3*Rq^2 + (2*Rinner)^2);
-JQ1AndCB = Jbar - Jaux;
-Jring = pi*pAl*D*(1/12)*(3*(Router^4 - Rinner^4)+ D^2*(Router^2 - Rinner^2));
+JBar = SigM * (1/12) * (3*Rq^2 + (2*SigH)^2);
+JAux = Maux * (1/12) * (3*Rq^2 + (2*Rinner)^2);
+JQ1AndCB = JBar - JAux;
+JRing = pi*pAl*D*(1/12)*(3*(Router^4 - Rinner^4)+ D^2*(Router^2 - Rinner^2));
 Jq0 = Q0(16);
-SigJ = JQ1AndCB + Jring + Jq0;
+SigJ0 = JQ1AndCB + JRing + Jq0;     % SigJ0 is the total moment of inertia applied on Q0
 
-% Determining B:
-INoLoad = Q0(3);
-WNoLoad = Q0(2);
-B = TConst0*INoLoad/WNoLoad;        % Compute B from the no load parameters
+% Determining B (Damping Constant):
+INoLoad0 = Q0(3);
+WNoLoad0 = Q0(2);
+B0 = TConst0*INoLoad0/WNoLoad0;        % Compute B from the no load parameters
 
-% Determining K:
-K = SpringConst;
+% Determining K (Spring Constant):
+% The spring constant doesn't originate from the motor Q0 itself,
+% instead it's due to the spring connected to the bearings
+K = SpringConst;                 % Value taken from the Datasheet
 
 % Mech Transfer Function:
-K = 0;
-SigJ =8*10^(-5);
-
-Mech0n  = [1 0];               % Numerator
-Mech0d  = [SigJ B K];        % Denominator
-JntSat0 =  Big;
+% The transfer function in the standard form s/(Js^2 + Bs + K)
+Mech0n  = [1 0];                 % Numerator
+Mech0d  = [SigJ0 B0 K];          % Denominator
+JntSat0 =  Big;                  % Q0 has unlimited motion range, as stated in the Datasheet
 
 % Sensor Dynamics
-% ---------------
+Sens0    =  4000/(2*pi);    % sensor gain of the optical encoder;
+                            % value provided by Dr. Stocco in class
+SensSat0 =  SensV;          % sensor saturation voltage, taken from the Datasheet
 
 % Static Friction
-% ---------------
+MRing = pAl * pi * (Router^2 - Rinner^2) * D;   % Mass of the ring
+FOnQ0 = (1/2)*(2*Mq + MRing)*G;    % Total force applied on q0 when q0 is stationary
+StFric0 = uStatFric * FOnQ0;       % Total static frictional torque
 
 
 % =============================
@@ -162,28 +177,55 @@ JntSat0 =  Big;
 % =============================
 
 % Amplifier Dynamics
-% ------------------
+Amp1n = Amp0n;
+Amp1d = Amp0d;
+AmpSat1 = Q1(1);
 
 % Electrical Motor Dynamics
-Elec1n  = [1];               % Numerator
-Elec1d  = [Q1(10)];          % Denominator
+Elec1n  = [1];                      % Numerator
+Elec1d  = [Q1(11) Q1(10)];          % Denominator
 
 % Torque Const & Back EMF
 TConst1  = Q1(12);
 BackEMF1 = 1/(Q1(13));
 
 % Mechanical Motor Dynamics
-% -------------------------
+% Determining J:
+Jq1 = Q1(16);
+SigJ1 = Jq1;
+
+% Determining B:
+INoLoad1 = Q1(3);
+WNoLoad1 = Q1(2);
+B1 = TConst1*INoLoad1/WNoLoad1;        % Compute B from the no load parameters
+
+% Mech Transfer Function:
+Mech1n  = [1];                         % Numerator
+Mech1d  = [SigJ1 B1];                  % Denominator
+JntSat1 =  JntLim * RadPerDeg;         % Q1's limit of motion range, given by the Datasheet
 
 % Sensor Dynamics
-% ---------------
+Sens1    =  4000/(2*pi);    % value provided by Dr. Stocco in class
+SensSat1 =  SensV;          % sensor saturation voltage
 
 % Static Friction
-% ---------------
-
+StFric1 = 0;                % static friction on q1 is negligible, since only the laser is loaded on q1's rotor
 
 % ==================
 % TRANSFER FUNCTIONS
 % ==================
 % Compute transfer functions from above values and perform system analysis
 % You may prefer to put this section in a separate .m file
+
+% Amplifier Transfer Functions
+AmpXF0 = tf(Amp0n,Amp0d);
+AmpXF1 = tf(Amp1n, Amp1d);
+
+% Electrical Transfer Functions
+ElecXF0 = tf(Elec0n, Elec0d);
+ElecXF1 = tf(Elec1n, Elec1d);
+
+% Mechanical Transfer Functions
+MechXF0 = tf(Mech0n, Mech0d);
+MechXF1 = tf(Mech1n, Mech1d);
+
