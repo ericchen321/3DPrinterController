@@ -162,10 +162,14 @@ Mech0d  = [SigJ0 B0 K];          % Denominator
 JntSat0 =  Big;                  % Q0 has unlimited motion range, as stated in the Datasheet
 
 % Sensor Dynamics
-Sens0    =  4000/(2*pi);    % sensor gain of the optical encoder;
-                            % value provided by Dr. Stocco in class
-SensSat0 =  SensV;          % sensor saturation voltage, taken from the Datasheet
-
+SensSat0 =  SensV;                          % sensor saturation voltage
+Sens0    =  SensSat/(SensAng*RadPerDeg);    % The sensor delivers max voltage output when the input
+                                            % angle reaches max, also
+                                            % assume the output voltage is
+                                            % 0 when the input angle is 0.
+                                            % Also we know the output voltage
+                                            % changes linearly with respect
+                                            % to the input angle.
 % Static Friction
 MRing = pAl * pi * (Router^2 - Rinner^2) * D;   % Mass of the ring
 FOnQ0 = (1/2)*(2*Mq + MRing)*G;    % Total force applied on q0 when q0 is stationary
@@ -205,8 +209,10 @@ Mech1d  = [SigJ1 B1];                  % Denominator
 JntSat1 =  JntLim * RadPerDeg;         % Q1's limit of motion range, given by the Datasheet
 
 % Sensor Dynamics
-Sens1    =  4000/(2*pi);    % value provided by Dr. Stocco in class
-SensSat1 =  SensV;          % sensor saturation voltage
+SensSat1 =  SensV;                          % sensor saturation voltage
+Sens1    =  SensSat/(SensAng*RadPerDeg);    % identical sensors used for q0 and q1,
+                                            % so the sensor gains are the
+                                            % same
 
 % Static Friction
 StFric1 = 0;                % static friction on q1 is negligible, since only the laser is loaded on q1's rotor
