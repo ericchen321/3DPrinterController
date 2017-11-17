@@ -95,10 +95,10 @@ Q1(22) = Q1(22)+273;
 % ==========================
 
 % Maximum Current
-NomI0   = 1;                 % Max average current
-StallI0 = 1;                 % Max peak current
-NomI1   = 1;                 % Max average current
-StallI1 = 1;                 % Max peak current
+NomI0   = Q0(6);                 % Max average current
+StallI0 = Q0(8);                 % Max peak current
+NomI1   = Q1(6);                 % Max average current
+StallI1 = Q1(8);                 % Max peak current
 
 % =============================
 % Q0 : Rotation about y-axis
@@ -132,14 +132,14 @@ SigJ = JQ1AndCB + Jring + Jq0;
 % Determining B:
 INoLoad = Q0(3);
 WNoLoad = Q0(2);
-B = 10*TConst0*INoLoad/WNoLoad;        % Compute B from the no load parameters
+B = TConst0*INoLoad/WNoLoad;        % Compute B from the no load parameters
 
 % Determining K:
-K = 0;
+K = SpringConst;
 
 % Mech Transfer Function:
-SigJ = 0;
-
+K = 0;
+SigJ =8*10^(-5);
 Mech0n  = [1 0];               % Numerator
 Mech0d  = [SigJ B K];        % Denominator
 JntSat0 =  Big;
