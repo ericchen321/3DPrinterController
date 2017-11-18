@@ -149,7 +149,13 @@ SigJ0 = JQ1AndCB + JRing + Jq0;     % SigJ0 is the total moment of inertia appli
 % Determining B (Damping Constant):
 INoLoad0 = Q0(3);
 WNoLoad0 = Q0(2);
-B0 = TConst0*INoLoad0/WNoLoad0;        % Compute B from the no load parameters
+B0 = TConst0*INoLoad0/WNoLoad0;        % Compute B from the no load parameters.
+                                       % No load current multiplied by
+                                       % torque constant yields no load
+                                       % torque required to overcome friction, 
+                                       % divided by no load speed
+                                       % gives us the mechanical friction
+                                       % parameter.
 
 % Determining K (Spring Constant):
 % The spring constant doesn't originate from the motor Q0 itself,
@@ -182,6 +188,7 @@ StFric0 = uStatFric * FOnQ0;       % Total static frictional torque
 % =============================
 
 % Amplifier Dynamics
+% The Power Amplifiers are identical, so same transfer function
 Amp1n = Amp0n;
 Amp1d = Amp0d;
 AmpSat1 = Q1(1);
@@ -203,6 +210,8 @@ SigJ1 = Jq1;
 INoLoad1 = Q1(3);
 WNoLoad1 = Q1(2);
 B1 = TConst1*INoLoad1/WNoLoad1;        % Compute B from the no load parameters
+                                       % using the same procedures as for
+                                       % q0
 
 % Mech Transfer Function:
 Mech1n  = [1];                         % Numerator
