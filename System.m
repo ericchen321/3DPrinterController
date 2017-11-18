@@ -75,11 +75,12 @@ ConversionArray = ...
 Q0 = ConversionArray .* Q0;
 Q1 = ConversionArray .* Q1;
 SpringConst = SpringK * 0.001 * 1/(2*pi);
-Router = LinkR2 * 0.001;    % outer radius of the ring
-Rinner = LinkR1 * 0.001;    % inner radius of the ring
-D = LinkD * 0.001;          % depth of the ring
-Mq = Q1(31);                % mass of q1
-Rq = Q1(32)/2;              % outer radius of q1
+Router = LinkR2 * 0.001;            % outer radius of the ring
+Rinner = LinkR1 * 0.001;            % inner radius of the ring
+LinkOffset = LinkOff * 0.001;       % Link offset
+D = LinkD * 0.001;                  % depth of the ring
+Mq = Q1(31);                        % mass of q1
+Rq = Q1(32)/2;                      % outer radius of q1
 Hq = Q1(33);                % height of q1
 pAl = RhoAl;                % density of Al
 uStatFric = uSF * 10^(-6);  % static friction constant
@@ -135,11 +136,11 @@ BackEMF0 = 1/(Q0(13));              % The inverse of the speed costant in
 % Determining J (Moment of Inertia):
 % The procedure we've used to derive the total moment of inertia on Q0 has
 % been illustrated in our PDF Description.
-Maux = (Rinner/Hq)*Mq*2;
-SigH = Rinner + Hq;
-SigM = ((Rinner/Hq)*2 + 2)*Mq;
+Maux = (LinkOffset/Hq)*Mq*2;
+SigH = LinkOffset + Hq;
+SigM = ((LinkOffset/Hq)*2 + 2)*Mq;
 JBar = SigM * (1/12) * (3*Rq^2 + (2*SigH)^2);
-JAux = Maux * (1/12) * (3*Rq^2 + (2*Rinner)^2);
+JAux = Maux * (1/12) * (3*Rq^2 + (2*LinkOffset)^2);
 JQ1AndCB = JBar - JAux;
 JRing = pi*pAl*D*(1/12)*(3*(Router^4 - Rinner^4)+ D^2*(Router^2 - Rinner^2));
 Jq0 = Q0(16);
@@ -163,7 +164,7 @@ JntSat0 =  Big;                  % Q0 has unlimited motion range, as stated in t
 
 % Sensor Dynamics
 SensSat0 =  SensV;                          % sensor saturation voltage
-Sens0    =  SensSat/(SensAng*RadPerDeg);    % The sensor delivers max voltage output when the input
+Sens0    =  SensSat0/(SensAng*RadPerDeg);    % The sensor delivers max voltage output when the input
                                             % angle reaches max, also
                                             % assume the output voltage is
                                             % 0 when the input angle is 0.
@@ -210,7 +211,7 @@ JntSat1 =  JntLim * RadPerDeg;         % Q1's limit of motion range, given by th
 
 % Sensor Dynamics
 SensSat1 =  SensV;                          % sensor saturation voltage
-Sens1    =  SensSat/(SensAng*RadPerDeg);    % identical sensors used for q0 and q1,
+Sens1    =  SensSat1/(SensAng*RadPerDeg);    % identical sensors used for q0 and q1,
                                             % so the sensor gains are the
                                             % same
 
