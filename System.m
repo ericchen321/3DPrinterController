@@ -89,7 +89,7 @@ R2  = R2;                   % R2
 C   = C*10^(-6);            % C from uF to F
 L   = L*0.001;              % L from mH to H
 
-% Convert temperatures to Kelvin
+% Convert temperatures from Celsius to Kelvin
 Q0(21) = Q0(21)+273; 
 Q1(21) = Q1(21)+273;
 Q0(22) = Q0(22)+273;
@@ -134,16 +134,29 @@ BackEMF0 = 1/(Q0(13));              % The inverse of the speed costant in
 
 % Mechanical Motor Dynamics
 % Determining J (Moment of Inertia):
-% The procedure we've used to derive the total moment of inertia on Q0 has
-% been illustrated in our PDF Description.
-Maux = (LinkOffset/Hq)*Mq*2;
+% A graphical illustration for our procedure to derive the total moment of inertia on Q0 has
+% been illustrated in our slides.
+Maux = (LinkOffset/Hq)*Mq*2;        % Here I'm using superposition to compute
+                                    % the moment of inertia due to Q1 and
+                                    % its counterbalance. Maux is the mass
+                                    % of a fictious "motor and its
+                                    % counterweight" between the Q0's supporting 
+                                    % bar and Q0's face 
 SigH = LinkOffset + Hq;
-SigM = ((LinkOffset/Hq)*2 + 2)*Mq;
-JBar = SigM * (1/12) * (3*Rq^2 + (2*SigH)^2);
-JAux = Maux * (1/12) * (3*Rq^2 + (2*LinkOffset)^2);
-JQ1AndCB = JBar - JAux;
-JRing = pi*pAl*D*(1/12)*(3*(Router^4 - Rinner^4)+ D^2*(Router^2 - Rinner^2));
-Jq0 = Q0(16);
+SigM = ((LinkOffset/Hq)*2 + 2)*Mq;                  % Total mass of Q1, Q1's couterweight, and
+                                                    % Maux
+JBar = SigM * (1/12) * (3*Rq^2 + (2*SigH)^2);       % Total moment of inertia of Q1, Q1's counterweight,
+                                                    % and the moment of
+                                                    % inertia due to MAux
+JAux = Maux * (1/12) * (3*Rq^2 + (2*LinkOffset)^2); 
+JQ1AndCB = JBar - JAux;                             % Subtract the moment of inertia due to
+                                                    % MAux from the total
+                                                    % moment of inertia, we
+                                                    % get the moment of
+                                                    % inertia due to Q1 and
+                                                    % its counterweight
+JRing = pi*pAl*D*(1/12)*(3*(Router^4 - Rinner^4)+ D^2*(Router^2 - Rinner^2));       % Moment of inertia due to the rotation of the circular ring
+Jq0 = Q0(16);                       % Moment of inertia due to the rotation of Q0 itself
 SigJ0 = JQ1AndCB + JRing + Jq0;     % SigJ0 is the total moment of inertia applied on Q0
 
 % Determining B (Damping Constant):
@@ -164,6 +177,7 @@ K = SpringConst;                 % Value taken from the Datasheet
 
 % Mech Transfer Function:
 % The transfer function in the standard form s/(Js^2 + Bs + K)
+K = 0;
 Mech0n  = [1 0];                 % Numerator
 Mech0d  = [SigJ0 B0 K];          % Denominator
 JntSat0 =  Big;                  % Q0 has unlimited motion range, as stated in the Datasheet
@@ -186,6 +200,9 @@ StFric0 = uStatFric * FOnQ0;       % Total static frictional torque
 % =============================
 % Q1 : Rotation about x-axis
 % =============================
+
+% WE'VE USED THE SAME PROCEDURE AS WE USED FOR Q0 TO COMPUTE MOST OF THE PARAMETERS
+% OF Q1.
 
 % Amplifier Dynamics
 % The Power Amplifiers are identical, so same transfer function
