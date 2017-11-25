@@ -22,6 +22,7 @@
 % ==========================
 AMAX22_5W_SB;                % Default Maxon motor
 Q0 = MotorParam;
+AMAX22_6W_SB;                % Motor for Q1
 Q1 = MotorParam;
 
 % Motor Unit Conversions
@@ -177,7 +178,6 @@ K = SpringConst;                 % Value taken from the Datasheet
 
 % Mech Transfer Function:
 % The transfer function in the standard form s/(Js^2 + Bs + K)
-K = 0;
 Mech0n  = [1 0];                 % Numerator
 Mech0d  = [SigJ0 B0 K];          % Denominator
 JntSat0 =  Big;                  % Q0 has unlimited motion range, as stated in the Datasheet
