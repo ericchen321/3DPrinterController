@@ -11,43 +11,44 @@ RefMechXF0 = tf(Mech0n, Mech0d);
 RefMechXF1 = tf(Mech1n, Mech1d);
 
 %Compare Amplifier Xfer Fctns
+figure;
 step(AmpXF0);
 hold on;
 step(RefAmpXF0);
 title('Q0 Amplifier XFs');
 legend();
-figure;
 
+figure;
 step(AmpXF1);
 hold on;
 step(RefAmpXF1);
 title('Q1 Amplifier XFs');
 legend();
-figure;
 
 %Compare Elec Xfer Fctns
+figure;
 step(ElecXF0);
 hold on;
 step(RefElecXF0);
 title('Q0 Elec XFs');
 legend();
-figure;
 
+figure;
 step(ElecXF1);
 hold on;
 step(ElecXF1);
 title('Q1 Elec XFs');
 legend();
-figure;
 
 %Compare Mech Xfer Fctns
+figure;
 step(MechXF0);
 hold on;
 step(RefMechXF0);
 title('Q0 Mech XFs');
 legend();
-figure;
 
+figure;
 step(MechXF1);
 hold on;
 step(RefMechXF1);
