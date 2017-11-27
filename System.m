@@ -267,8 +267,11 @@ ElecMechXF0 = ElecXF0 * TConst0 * MechXF0;
 ElecMechXF1 = ElecXF1 * TConst1 * MechXF1;
 
 MotorXF0 = AmpXF0 * (1/(1 + ElecMechXF0 * BackEMF0)) * (1/s);
-MotorXF1 = AmpXF1 * (1/(1 + ElecMechXF1 * BackEMF1)) * (1/s);pz
+MotorXF1 = AmpXF1 * (1/(1 + ElecMechXF1 * BackEMF1)) * (1/s);
 
 % System (Open-loop) Transfer Functions
 SysXF0 = MotorXF0;
 SysXF1 = MotorXF1;
+
+[Motor0p,Motor0z]=pzmap(MotorXF0);
+[Motor1p,Motor1z]=pzmap(MotorXF1);
