@@ -163,7 +163,7 @@ SigJ0 = JQ1AndCB + JRing + Jq0;     % SigJ0 is the total moment of inertia appli
 % Determining B (Damping Constant):
 INoLoad0 = Q0(3);
 WNoLoad0 = Q0(2);
-B0 = TConst0*INoLoad0/WNoLoad0;        % Compute B from the no load parameters.
+B0 = 2*TConst0*INoLoad0/WNoLoad0;      % Compute B from the no load parameters.
                                        % No load current multiplied by
                                        % torque constant yields no load
                                        % torque required to overcome friction, 
