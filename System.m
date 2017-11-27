@@ -263,8 +263,11 @@ MechXF0 = tf(Mech0n, Mech0d);
 MechXF1 = tf(Mech1n, Mech1d);
 
 % Motor Transfer Functions: linearized transfer functions of the motors
-MotorXF0 = ElecXF0 * TConst0 * MechXF0 * (1/s);
-MotorXF1 = ElecXF1 * TConst1 * MechXF1 * (1/s);
+ElecMechXF0 = ElecXF0 * TConst0 * MechXF0;
+ElecMechXF1 = ElecXF1 * TConst1 * MechXF1;
+
+MotorXF0 = AmpXF0 * (1/(1 + ElecMechXF0 * BackEMF0)) * (1/s);
+MotorXF1 = AmpXF1 * (1/(1 + ElecMechXF1 * BackEMF1)) * (1/s);pz
 
 % System (Open-loop) Transfer Functions
 SysXF0 = MotorXF0;
