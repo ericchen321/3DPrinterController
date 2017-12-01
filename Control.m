@@ -4,8 +4,6 @@
 % CONTROLLER GAINS
 % ================
 
-% Enter optimized PID values here.
-% No more than 3 significant figures per gain value.
 
 % System (Open-loop) Transfer Functions
 SysOLXF0 = minreal(MotorXF0, 1e-3);
@@ -16,6 +14,7 @@ SysOLXF1 = minreal(MotorXF1, 1e-3);
 % For Q0: Root Locus
 UnityGain = 1;
 PID0z = [SysOLXF0p(3) SysOLXF0p(4)]; % Defines which two open-loop poles to cancel
+PID0z = [-0.975+9.788i -0.975-9.788i];
 PID0p = [0]; % PID adds a zero to the open loop xfer fctn
 PIDXF0 = zpk(PID0z, PID0p, UnityGain);  %PID0's transfer function with Kd undetermined
 OLXF0 = minreal((PIDXF0 * SysOLXF0), 1e-3);
@@ -36,7 +35,7 @@ OLXF1 = minreal(PIDXF1 * SysOLXF1, 1e-3);
 [PID0n, PID0d] = tfdata(PIDXF0, 'v');   % extract num and den coefficicents
 KpPerKd0 = PID0n(2);
 KiPerKd0 = PID0n(3);
-Kd0 = 0.5;
+Kd0 = 0.6;
 Kp0 = KpPerKd0 * Kd0;
 Ki0 = KiPerKd0 * Kd0;
 CLXF0 = (Kd0 * OLXF0) / (1 + Kd0 * OLXF0);
@@ -44,11 +43,13 @@ CLXF0 = (Kd0 * OLXF0) / (1 + Kd0 * OLXF0);
 [PID1n, PID1d] = tfdata(PIDXF1, 'v');   % extract num and den coefficicents
 KpPerKd1 = PID1n(2);
 KiPerKd1 = PID1n(3);
-Kd1 = 0.005;
+Kd1 = 0.0046;
 Kp1 = KpPerKd1 * Kd1;
 Ki1 = KiPerKd1 * Kd1;
 CLXF1 = (Kd1 * OLXF1) / (1 + Kd1 * OLXF1);
 
+% Enter optimized PID values here.
+% No more than 3 significant figures per gain value.
 PID0 = [Kp0 Ki0 Kd0];
 PID1 = [Kp1 Ki1 Kd1];
 
