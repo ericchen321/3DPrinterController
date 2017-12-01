@@ -22,7 +22,7 @@
 % ==========================
 AMAX22_6W_SB;                % Motor for Q1
 Q0 = MotorParam;
-AMAX12_p75W_SB;                % Motor for Q1
+AMAX22_6W_SB;                % Motor for Q1
 Q1 = MotorParam;
 
 % Motor Unit Conversions
@@ -268,12 +268,3 @@ ElecMechXF1 = ElecXF1 * TConst1 * MechXF1;
 
 MotorXF0 = AmpXF0*(ElecMechXF0/(1 + ElecMechXF0 * BackEMF0))*(1/s);
 MotorXF1 = AmpXF1*(ElecMechXF1/(1 + ElecMechXF1 * BackEMF1))*(1/s);
-
-% System (Open-loop) Transfer Functions
-%OLXF0 = MotorXF0;
-%OLXF1 = MotorXF1;
-%OLXF0 = minreal(OLXF0, 1e-3);
-%OLXF1 = minreal(OLXF1, 1e-3);
-
-%[OLXF0p,OLXF0z]=pzmap(OLXF0);
-%[OLXF1p,OLXF1z]=pzmap(OLXF1);
