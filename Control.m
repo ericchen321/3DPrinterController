@@ -22,7 +22,7 @@ OLXF0 = minreal((PIDXF0 * SysOLXF0), 1e-3);
 %title('RLocus Q0');
 
 % For Q1: Root Locus
-PID1z = [SysOLXF1p(1) SysOLXF1p(3)]; % Defines which two open-loop poles to cancel
+PID1z = [SysOLXF1p(1) SysOLXF1p(4)]; % Defines which two open-loop poles to cancel
 PID1p = [0]; % PID adds a zero to the open loop xfer fctn
 PIDXF1 = zpk(PID1z, PID1p, UnityGain);  %PID0's transfer function with Kd undetermined
 OLXF1 = minreal(PIDXF1 * SysOLXF1, 1e-3);
@@ -34,7 +34,7 @@ OLXF1 = minreal(PIDXF1 * SysOLXF1, 1e-3);
 [PID0n, PID0d] = tfdata(PIDXF0, 'v');   % extract num and den coefficicents
 KpPerKd0 = PID0n(2);
 KiPerKd0 = PID0n(3);
-Kd0 = 0.5;
+Kd0 = 0.08;
 Kp0 = KpPerKd0 * Kd0;
 Ki0 = KiPerKd0 * Kd0;
 CLXF0 = (Kd0 * OLXF0) / (1 + Kd0 * OLXF0);
@@ -42,7 +42,7 @@ CLXF0 = (Kd0 * OLXF0) / (1 + Kd0 * OLXF0);
 [PID1n, PID1d] = tfdata(PIDXF1, 'v');   % extract num and den coefficicents
 KpPerKd1 = PID1n(2);
 KiPerKd1 = PID1n(3);
-Kd1 = 0.005;
+Kd1 = 0.0025;
 Kp1 = KpPerKd1 * Kd1;
 Ki1 = KiPerKd1 * Kd1;
 CLXF1 = (Kd1 * OLXF1) / (1 + Kd1 * OLXF1);

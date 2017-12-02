@@ -22,7 +22,7 @@
 % ==========================
 AMAX22_6W_SB;                % Motor for Q1
 Q0 = MotorParam;
-AMAX22_6W_SB;                % Motor for Q1
+AMAX12_p75W_SB;                % Motor for Q1
 Q1 = MotorParam;
 
 % Motor Unit Conversions
@@ -33,7 +33,7 @@ ConversionArray = ...
  0.001                  % NoLoadCurr    (mA)
  RadPSecPerRPM          % NomSpd        (rpm)
  0.001                  % NomTorque     (mNm)
- 0.001                  % NomCurr       (mA)
+ 1                      % NomCurr       (A)
  0.001                  % StallTorque   (mNm)
  1                      % StallCurr     (A)
  0.01                   % MaxEff        (%)
