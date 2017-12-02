@@ -49,8 +49,8 @@ CLXF1 = (Kd1 * OLXF1) / (1 + Kd1 * OLXF1);
 
 % Enter optimized PID values here.
 % No more than 3 significant figures per gain value.
-PID0 = [Kp0 Ki0 Kd0];
-PID1 = [Kp1 Ki1 Kd1];
+PID0 = [0.178 8.83 0.0785];
+PID1 = [0.123 0 0.00250];
 
 % Enter feedback sensor values here.
 
