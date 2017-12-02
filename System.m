@@ -243,28 +243,3 @@ Sens1    =  SensSat1/(SensAng*RadPerDeg);    % identical sensors used for q0 and
 
 % Static Friction
 StFric1 = 0;                % static friction on q1 is negligible, since only the laser is loaded on q1's rotor
-
-% ==================
-% TRANSFER FUNCTIONS
-% ==================
-% Compute transfer functions from above values and perform system analysis
-% You may prefer to put this section in a separate .m file
-
-% Amplifier Transfer Functions
-AmpXF0 = tf(Amp0n,Amp0d);
-AmpXF1 = tf(Amp1n, Amp1d);
-
-% Electrical Transfer Functions
-ElecXF0 = tf(Elec0n, Elec0d);
-ElecXF1 = tf(Elec1n, Elec1d);
-
-% Mechanical Transfer Functions
-MechXF0 = tf(Mech0n, Mech0d);
-MechXF1 = tf(Mech1n, Mech1d);
-
-% Motor Transfer Functions: linearized transfer functions of the motors
-ElecMechXF0 = ElecXF0 * TConst0 * MechXF0;
-ElecMechXF1 = ElecXF1 * TConst1 * MechXF1;
-
-MotorXF0 = AmpXF0*(ElecMechXF0/(1 + ElecMechXF0 * BackEMF0))*(1/s);
-MotorXF1 = AmpXF1*(ElecMechXF1/(1 + ElecMechXF1 * BackEMF1))*(1/s);
